@@ -1,0 +1,18 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+
+# Models (later)
+models/
+
+/home/durga-prasad/robo_car/venv
