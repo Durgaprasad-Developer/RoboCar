@@ -20,3 +20,9 @@ models/
 
 
 robocarNotes
+
+/home/durga-prasad/robo_car/yolov8n.pt
+
+*.pt
+*.onnx
+*.engine
