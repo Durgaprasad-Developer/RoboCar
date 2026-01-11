@@ -26,3 +26,5 @@ robocarNotes
 *.pt
 *.onnx
 *.engine
+
+yolov8n.pt
