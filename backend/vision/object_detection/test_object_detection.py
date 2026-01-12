@@ -2,41 +2,40 @@ import cv2
 import time
 
 from backend.vision.camera import Camera
-from backend.vision.object_detection import YOLOv8Detector, GeminiVisionDetector
+from backend.vision.object_detection.yolo8_detector import YOLOv8Detector
+from backend.vision.object_detection.gemini_validator import GeminiValidator
 
-YOLO_INTERVAL = 3                 # run YOLO every N frames
-YOLO_FAIL_THRESHOLD = 10          # consecutive fails before Gemini
-GEMINI_COOLDOWN = 30              # seconds
-MEMORY_TIMEOUT = 1.0              # seconds to keep last detection
+YOLO_INTERVAL = 3
+MEMORY_TIMEOUT = 1.2
 
 
-def draw(frame, detections, source):
+def draw_yolo(frame, detections):
     for d in detections:
         x1, y1, x2, y2 = d["bbox"]
-        label = f"{d['label']} ({source})"
-        color = (0, 255, 0) if source == "YOLOv8" else (0, 0, 255)
+        label = f"{d['label']} ({d['confidence']:.2f})"
 
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.putText(
-            frame, label, (x1, y1 - 10),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2
+            frame,
+            label,
+            (x1, y1 - 10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 255, 0),
+            2
         )
 
 
 def main():
     cam = Camera()
     yolo = YOLOv8Detector()
-    gemini = GeminiVisionDetector()
+    gemini = GeminiValidator()
 
     frame_count = 0
-    yolo_fail_count = 0
-    last_gemini_time = 0
-
     last_detections = []
-    last_source = None
-    last_detection_time = 0
+    last_time = 0
 
-    print("🚀 Optimized Object Detection Running")
+    print("🚀 YOLO + Gemini (Validator Mode) Running")
 
     while True:
         frame = cam.get_frame()
@@ -44,40 +43,36 @@ def main():
             break
 
         frame_count += 1
-        detections = []
 
-        # -------- YOLO (fast, periodic) --------
+        # ---- YOLO (FAST, LOCAL) ----
         if frame_count % YOLO_INTERVAL == 0:
             detections = yolo.detect(frame)
             if detections:
-                yolo_fail_count = 0
                 last_detections = detections
-                last_source = "YOLOv8"
-                last_detection_time = time.time()
-            else:
-                yolo_fail_count += 1
+                last_time = time.time()
 
-        # -------- GEMINI (slow, rare) --------
-        now = time.time()
-        if (
-            yolo_fail_count >= YOLO_FAIL_THRESHOLD
-            and (now - last_gemini_time) > GEMINI_COOLDOWN
-        ):
-            print("🔴 Triggering Gemini fallback")
-            detections = gemini.detect(frame)
-            last_gemini_time = now
+                # ---- GEMINI (SLOW, CLOUD, VALIDATOR) ----
+                if gemini.should_validate(detections):
+                    print("🧠 Gemini validating...")
+                    gemini.validate_async(frame, detections[0]["label"])
 
-            if detections:
-                last_detections = detections
-                last_source = "GEMINI"
-                last_detection_time = now
-                yolo_fail_count = 0
+        # ---- DRAW YOLO MEMORY ----
+        if last_detections and (time.time() - last_time) < MEMORY_TIMEOUT:
+            draw_yolo(frame, last_detections)
 
-        # -------- MEMORY (anti-blink) --------
-        if last_detections and (time.time() - last_detection_time) < MEMORY_TIMEOUT:
-            draw(frame, last_detections, last_source)
+        # ---- DRAW GEMINI RESULT ----
+        if gemini.result_text:
+            cv2.putText(
+                frame,
+                f"Gemini: {gemini.result_text}",
+                (20, 40),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 0, 255),
+                2
+            )
 
-        cv2.imshow("Robot Vision (Optimized)", frame)
+        cv2.imshow("Robot Vision (YOLO + Gemini Validator)", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
