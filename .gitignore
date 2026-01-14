@@ -28,3 +28,59 @@ robocarNotes
 *.engine
 
 yolov8n.pt
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.so
+
+# =========================
+# Virtual Environments
+# =========================
+venv/
+venv_face/
+.env/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+.vscode/
+.idea/
+
+# =========================
+# Model Files (ML)
+# =========================
+*.pt
+*.onnx
+*.engine
+*.weights
+
+# Explicit large models
+yolov8n.pt
+yolov8n.onnx
+
+# =========================
+# Logs / Temp
+# =========================
+logs/
+*.log
+
+# =========================
+# Data / Outputs
+# =========================
+outputs/
+results/
+runs/
+
+# =========================
+# Models Directory (optional)
+# =========================
+models/
