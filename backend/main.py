@@ -1,21 +1,21 @@
-from core.loop import run_robot
-from core.state import RobotState, RobotMode
+# backend/main.py
+
 import threading
-import time
+import uvicorn
+
+from core.loop import run_brain_loop
+from api.server import create_app
+
+
+def start_brain():
+    run_brain_loop()
+
 
 if __name__ == "__main__":
-    state = RobotState()
+    # Start robot brain loop (NON-daemon)
+    brain_thread = threading.Thread(target=start_brain)
+    brain_thread.start()
 
-    # Demo: switch modes over time
-    def demo():
-        time.sleep(2)
-        state.set_mode(RobotMode.AUTO)
-        time.sleep(3)
-        state.set_manual_command("LEFT")
-        time.sleep(2)
-        state.set_mode(RobotMode.TRACK_BALL)
-        time.sleep(3)
-        state.set_mode(RobotMode.IDLE)
-
-    threading.Thread(target=demo, daemon=True).start()
-    run_robot(state)
+    # Start API server (blocking, main thread)
+    app = create_app()
+    uvicorn.run(app, host="0.0.0.0", port=8000)

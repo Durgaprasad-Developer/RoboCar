@@ -7,19 +7,26 @@ class RobotMode(Enum):
     TRACK_BALL = 3
     FOLLOW_OWNER = 4
 
-class RobotState:
-    def __init__(self):
-        self.mode = RobotMode.IDLE
-        self.manual_command = None  # 'FORWARD', 'LEFT', etc.
+_current_mode = RobotMode.AUTO
+_manual_command = None
 
-    # ---- Mode setters (dashboard will call these) ----
-    def set_mode(self, mode: RobotMode):
-        self.mode = mode
-        self.manual_command = None  # clear manual command on mode switch
+def get_robot_mode():
+    return _current_mode
 
-    def set_manual_command(self, cmd: str):
-        self.mode = RobotMode.MANUAL
-        self.manual_command = cmd
+def set_robot_mode(mode: str):
+    global _current_mode
+    _current_mode = RobotMode[mode]
+    clear_manual_command()
 
-    def clear_manual(self):
-        self.manual_command = None
+
+def get_manual_command():
+    return _manual_command
+
+def set_manual_command(cmd: str):
+    global _manual_command, _current_mode
+    _current_mode = RobotMode.MANUAL
+    _manual_command = cmd
+
+def clear_manual_command():
+    global _manual_command
+    _manual_command = None

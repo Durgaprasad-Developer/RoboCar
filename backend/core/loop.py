@@ -1,61 +1,69 @@
+#backend/core/loop.py
+
 import time
-from core.state import RobotMode
-from control import motor
 
-def sense_environment():
-    # TB-3 still simulated
-    return {
-        "front_distance": 30,   # cm
-        "ball_seen": False,
-        "owner_seen": False
-    }
+from sensors.obstacle import ObstacleSensor
+from core.safety import SafetyEvaluator
+from core.decision import DecisionEngine
+from core.motion import MotionPlanner
+from core.state import (
+    get_robot_mode,
+    get_manual_command,
+)
+from control.motor import execute_motion
 
-def decide(perception, state):
-    # --- Safety override (always) ---
-    if perception["front_distance"] < 15:
-        return "AVOID_OBSTACLE"
+_last_snapshot = {}
 
-    # --- Manual has highest priority ---
-    if state.mode == RobotMode.MANUAL and state.manual_command:
-        return state.manual_command
+def get_last_snapshot():
+    return _last_snapshot
 
-    # --- Mode-gated behaviors ---
-    if state.mode == RobotMode.TRACK_BALL:
-        return "FOLLOW_BALL" if perception["ball_seen"] else "STOP"
+def run_brain_loop():
+    global _last_snapshot
 
-    if state.mode == RobotMode.FOLLOW_OWNER:
-        return "FOLLOW_OWNER" if perception["owner_seen"] else "STOP"
+    sensor = ObstacleSensor()
+    safety = SafetyEvaluator()
+    decision = DecisionEngine()
+    motion = MotionPlanner()
 
-    if state.mode == RobotMode.AUTO:
-        return "MOVE_FORWARD"
+    print("Root brain running (TB-11)")
 
-    if state.mode == RobotMode.IDLE:
-        return "STOP"
-
-    return "STOP"
-
-def act(decision):
-    if decision == "MOVE_FORWARD":
-        motor.move_forward()
-    elif decision == "FOLLOW_BALL":
-        motor.move_forward()
-    elif decision == "FOLLOW_OWNER":
-        motor.move_forward()
-    elif decision == "LEFT":
-        motor.turn_left()
-    elif decision == "RIGHT":
-        motor.turn_right()
-    elif decision == "BACK":
-        motor.move_backward()
-    elif decision == "AVOID_OBSTACLE":
-        motor.turn_left()  # full logic comes in TB-8
-    else:
-        motor.stop()
-
-def run_robot(state):
-    print("🤖 Robot brain running (TB-3)")
     while True:
-        perception = sense_environment()
-        decision = decide(perception, state)
-        act(decision)
-        time.sleep(0.5)
+        # 1. Sense
+        distances = sensor.get_distances()
+
+        # 2, Safety
+        safety_state = safety.evaluate(distances)
+
+        # 3. Decide
+        robot_mode = get_robot_mode()
+        manual_cmd = get_manual_command()
+
+        intent = decision.decide(
+            safety_state=safety_state,
+            robot_mode=robot_mode,
+            ball_seen=False,
+            owner_seen=False,
+        )
+
+        # 4. Motion strategy
+        direction = motion.decide_direction(
+            intent=intent,
+            safety_state=safety_state,
+            distances=distances,
+        )
+
+        # 5. Execute (still mocked)
+        execute_motion(direction)
+
+        # 6. Snapshot for API
+        _last_snapshot = {
+            "mode": robot_mode.name,
+            "safety": safety_state.name,
+            "intent": intent.name,
+            "motion": direction.name,
+            "distances": distances,
+        }
+
+        time.sleep(0.2)
+
+
