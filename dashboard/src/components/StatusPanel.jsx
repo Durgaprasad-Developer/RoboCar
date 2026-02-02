@@ -17,4 +17,5 @@ export default function StatusPanel({ status }) {
       <p>Right: {status.distances.right}</p>
     </div>
   );
+  
 }
