@@ -1,3 +1,4 @@
+# backend/vision/ball_tracking/detector.py
 import cv2
 
 def find_contours(mask):

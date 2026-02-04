@@ -2,20 +2,23 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import router
+from api.routes import router, set_camera
+from vision.camera import Camera
 
 
-def create_app() -> FastAPI:
+def create_app(camera: Camera) -> FastAPI:
     app = FastAPI(title="RoboCar Brain API")
 
-    # ✅ CORS FIX (TB-12)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173"],  # React dev server
+        allow_origins=["http://localhost:5173"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # 🔑 Share camera with routes
+    set_camera(camera)
 
     app.include_router(router)
     return app

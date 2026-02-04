@@ -44,13 +44,13 @@ class DecisionEngine:
                 return DecisionIntent(manual_cmd)
             return DecisionIntent.STOP
 
-        # 3️⃣ TRACK BALL (FIXED)
+        # 3️⃣ TRACK BALL
         if robot_mode == RobotMode.TRACK_BALL:
             if ball_seen:
                 return DecisionIntent.TRACK_BALL
-            return DecisionIntent.STOP   # 🔑 ball lost → stop
+            return DecisionIntent.STOP
 
-        # 4️⃣ Follow owner
+        # 4️⃣ Follow owner (not used yet)
         if robot_mode == RobotMode.FOLLOW_OWNER and owner_seen:
             return DecisionIntent.FOLLOW_OWNER
 

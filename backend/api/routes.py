@@ -1,4 +1,9 @@
+# backeend/api/routes.py
+
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
+import cv2
+
 from api.schemas import ModeRequest, ManualCommandRequest
 from core.state import (
     get_robot_mode,
@@ -7,29 +12,42 @@ from core.state import (
     RobotMode,
 )
 from core.loop import get_last_snapshot
+from vision.camera import Camera
 
 router = APIRouter()
+_camera: Camera | None = None
 
 
-@router.get("/health")
-def health():
-    return {"status": "ok"}
+def set_camera(camera: Camera):
+    global _camera
+    _camera = camera
 
 
 @router.get("/status")
 def get_status():
-    snapshot = get_last_snapshot()
-    return {
-        "mode": snapshot["mode"],
-        "safety": snapshot["safety"],
-        "intent": snapshot["intent"],
-        "motion": snapshot["motion"],
-        "distances": snapshot["distances"],
-        "manual_command": snapshot.get("manual_command"),
+    return get_last_snapshot()
 
-        # ✅ ADDED (READ-ONLY, NO LOGIC)
-        "perception": snapshot.get("perception"),
-    }
+
+@router.get("/video_feed")
+def video_feed():
+    def generate():
+        while True:
+            frame = _camera.get_frame()
+            if frame is None:
+                continue
+
+            _, jpeg = cv2.imencode(".jpg", frame)
+            yield (
+                b"--frame\r\n"
+                b"Content-Type: image/jpeg\r\n\r\n"
+                + jpeg.tobytes()
+                + b"\r\n"
+            )
+
+    return StreamingResponse(
+        generate(),
+        media_type="multipart/x-mixed-replace; boundary=frame",
+    )
 
 
 @router.post("/mode")

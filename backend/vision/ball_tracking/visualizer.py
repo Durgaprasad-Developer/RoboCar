@@ -1,3 +1,5 @@
+# backend/vision/ball_tracking/visualizer.py
+
 import cv2
 
 def draw(frame, center, radius, trail):
