@@ -1,7 +1,10 @@
-export default function StatusPanel({ status }) {
-  if (!status) return <div>Loading status…</div>;
+// dashboard/src/component/statusPanel.jsx
 
-  const ball = status.ball;   // ✅ READ BALL DATA
+export default function StatusPanel({ status }) {
+  if (!status) return <div className="panel">Loading status…</div>;
+
+  // 🔑 FIX: ball data comes from `status.perception`
+  const ball = status.perception;
 
   return (
     <div className="panel">
@@ -13,9 +16,9 @@ export default function StatusPanel({ status }) {
       <p><b>Motion:</b> {status.motion}</p>
 
       <h3>Distances</h3>
-      <p>Front: {status.distances.front}</p>
-      <p>Left: {status.distances.left}</p>
-      <p>Right: {status.distances.right}</p>
+      <p>Front: {status.distances?.front ?? "-"}</p>
+      <p>Left: {status.distances?.left ?? "-"}</p>
+      <p>Right: {status.distances?.right ?? "-"}</p>
 
       {/* 🔥 BALL TRACKING UI */}
       {status.mode === "TRACK_BALL" && (
@@ -25,7 +28,7 @@ export default function StatusPanel({ status }) {
             Seen: {ball?.ball_seen ? "YES" : "NO"}
           </p>
           <p>
-            Position: {ball?.ball_position || "NONE"}
+            Position: {ball?.ball_position ?? "NONE"}
           </p>
         </>
       )}
