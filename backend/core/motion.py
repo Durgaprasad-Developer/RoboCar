@@ -14,7 +14,7 @@ class MotionDirection(Enum):
 
 class MotionPlanner:
     """
-    TB-10 + TB-13
+    TB-10 + TB-13 + TB-14 (TRACK STOP FIX)
     Converts intent + safety + distances into motion
     """
 
@@ -29,7 +29,7 @@ class MotionPlanner:
         if intent == DecisionIntent.STOP:
             return MotionDirection.STOP
 
-        # 2️⃣ MANUAL DIRECTION OVERRIDE (TB-13 FINAL FIX)
+        # 2️⃣ MANUAL DIRECTION OVERRIDE
         if intent in (
             DecisionIntent.FORWARD,
             DecisionIntent.LEFT,
@@ -40,11 +40,20 @@ class MotionPlanner:
                 return MotionDirection.STOP
             return MotionDirection(intent.value)
 
+        # 🔥 3️⃣ TRACK BALL LOGIC (ADDED)
+        if intent == DecisionIntent.TRACK_BALL:
+            # Safety always overrides
+            if safety_state == SafetyState.BLOCKED:
+                return MotionDirection.STOP
+
+            # Ball lost → STOP (no blind forward)
+            return MotionDirection.STOP
+
         front = distances.get("front", 0)
         left = distances.get("left", 0)
         right = distances.get("right", 0)
 
-        # 3️⃣ AUTO behavior
+        # 4️⃣ AUTO behavior
         if safety_state == SafetyState.CLEAR:
             return MotionDirection.FORWARD
 

@@ -1,3 +1,5 @@
+# backend/core/decision.py
+
 from enum import Enum
 from core.safety import SafetyState
 from core.state import RobotMode, get_manual_command
@@ -35,16 +37,18 @@ class DecisionEngine:
         if safety_state == SafetyState.BLOCKED:
             return DecisionIntent.STOP
 
-        # 2️⃣ MANUAL MODE OVERRIDE (TB-13 CORE FIX)
+        # 2️⃣ MANUAL MODE
         if robot_mode == RobotMode.MANUAL:
             manual_cmd = get_manual_command()
             if manual_cmd:
                 return DecisionIntent(manual_cmd)
             return DecisionIntent.STOP
 
-        # 3️⃣ Track ball
-        if robot_mode == RobotMode.TRACK_BALL and ball_seen:
-            return DecisionIntent.TRACK_BALL
+        # 3️⃣ TRACK BALL (FIXED)
+        if robot_mode == RobotMode.TRACK_BALL:
+            if ball_seen:
+                return DecisionIntent.TRACK_BALL
+            return DecisionIntent.STOP   # 🔑 ball lost → stop
 
         # 4️⃣ Follow owner
         if robot_mode == RobotMode.FOLLOW_OWNER and owner_seen:

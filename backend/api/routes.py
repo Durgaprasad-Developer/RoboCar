@@ -26,6 +26,9 @@ def get_status():
         "motion": snapshot["motion"],
         "distances": snapshot["distances"],
         "manual_command": snapshot.get("manual_command"),
+
+        # ✅ ADDED (READ-ONLY, NO LOGIC)
+        "perception": snapshot.get("perception"),
     }
 
 
