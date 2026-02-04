@@ -1,3 +1,5 @@
+# backend/main.py
+
 import threading
 import uvicorn
 
@@ -12,20 +14,20 @@ def start_brain(camera: Camera):
 
 
 if __name__ == "__main__":
-    # 🔑 Create ONE global camera
+    # 🔥 ONE camera for everything
     camera = Camera()
 
-    # Start robot brain loop
+    # Brain loop thread
     brain_thread = threading.Thread(
         target=start_brain,
         args=(camera,),
-        daemon=True
+        daemon=True,
     )
     brain_thread.start()
 
-    # Start keyboard input
+    # Keyboard manual input
     start_keyboard()
 
-    # Start API server
+    # API server (blocking)
     app = create_app(camera)
     uvicorn.run(app, host="0.0.0.0", port=8000)

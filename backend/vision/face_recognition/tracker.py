@@ -1,4 +1,5 @@
 # vision/face_recognition/tracker.py
+
 import cv2
 
 class FaceTracker:

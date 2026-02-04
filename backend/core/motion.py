@@ -1,3 +1,5 @@
+# backend/core/motion.py
+
 from enum import Enum
 from typing import Dict, Optional
 from core.safety import SafetyState
@@ -14,9 +16,7 @@ class MotionDirection(Enum):
 
 class MotionPlanner:
     """
-    TB-14 FINAL (CORRECT)
-    - AUTO never leaks into TRACK
-    - Ball position drives motion
+    TB-14 FINAL
     """
 
     def decide_direction(
@@ -27,11 +27,11 @@ class MotionPlanner:
         ball_position: Optional[str] = None,
     ) -> MotionDirection:
 
-        # 1️⃣ STOP ALWAYS WINS
+        # 1️⃣ STOP WINS
         if intent == DecisionIntent.STOP:
             return MotionDirection.STOP
 
-        # 2️⃣ MANUAL OVERRIDE
+        # 2️⃣ MANUAL
         if intent in (
             DecisionIntent.FORWARD,
             DecisionIntent.LEFT,
@@ -42,23 +42,25 @@ class MotionPlanner:
                 return MotionDirection.STOP
             return MotionDirection(intent.value)
 
-        # 3️⃣ TRACK BALL (🔥 HARD MODE GATE)
+        # 3️⃣ TRACK BALL
         if intent == DecisionIntent.TRACK_BALL:
             if safety_state == SafetyState.BLOCKED:
                 return MotionDirection.STOP
 
             if ball_position == "LEFT":
                 return MotionDirection.LEFT
-
             if ball_position == "RIGHT":
                 return MotionDirection.RIGHT
-
             if ball_position == "CENTER":
                 return MotionDirection.FORWARD
 
-            return MotionDirection.STOP   # ball lost
+            return MotionDirection.STOP
 
-        # 4️⃣ AUTO MODE (ONLY WHEN INTENT == MOVE_FORWARD)
+        # 4️⃣ FOLLOW OWNER (V1 = STOP)
+        if intent == DecisionIntent.FOLLOW_OWNER:
+            return MotionDirection.STOP
+
+        # 5️⃣ AUTO MODE
         if intent == DecisionIntent.MOVE_FORWARD:
             front = distances.get("front", 0)
             left = distances.get("left", 0)
@@ -68,16 +70,13 @@ class MotionPlanner:
                 return MotionDirection.FORWARD
 
             if safety_state == SafetyState.WARNING:
-                if front < left or front < right:
-                    return MotionDirection.LEFT if left >= right else MotionDirection.RIGHT
-                return MotionDirection.FORWARD
+                return (
+                    MotionDirection.LEFT
+                    if left >= right
+                    else MotionDirection.RIGHT
+                )
 
             if safety_state == SafetyState.BLOCKED:
-                if left > front:
-                    return MotionDirection.LEFT
-                if right > front:
-                    return MotionDirection.RIGHT
                 return MotionDirection.BACK
 
-        # 5️⃣ FINAL FAILSAFE
         return MotionDirection.STOP

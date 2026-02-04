@@ -1,3 +1,4 @@
+# backend/test_recognition.py
 import cv2
 from insightface.app import FaceAnalysis
 from vision.camera import Camera

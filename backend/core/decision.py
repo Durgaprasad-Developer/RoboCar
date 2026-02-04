@@ -7,7 +7,6 @@ from core.state import RobotMode, get_manual_command
 
 class DecisionIntent(Enum):
     STOP = "STOP"
-    MANUAL = "MANUAL"
     TRACK_BALL = "TRACK_BALL"
     FOLLOW_OWNER = "FOLLOW_OWNER"
     MOVE_FORWARD = "MOVE_FORWARD"
@@ -22,7 +21,7 @@ class DecisionIntent(Enum):
 class DecisionEngine:
     """
     High-level decision maker.
-    Outputs intent only.
+    Outputs INTENT only.
     """
 
     def decide(
@@ -30,33 +29,35 @@ class DecisionEngine:
         safety_state: SafetyState,
         robot_mode: RobotMode,
         ball_seen: bool = False,
-        owner_seen: bool = False
+        owner_seen: bool = False,
     ) -> DecisionIntent:
 
-        # 1️⃣ Safety override (always)
+        # 1️⃣ SAFETY FIRST
         if safety_state == SafetyState.BLOCKED:
             return DecisionIntent.STOP
 
         # 2️⃣ MANUAL MODE
         if robot_mode == RobotMode.MANUAL:
-            manual_cmd = get_manual_command()
-            if manual_cmd:
-                return DecisionIntent(manual_cmd)
+            cmd = get_manual_command()
+            if cmd:
+                return DecisionIntent(cmd)
             return DecisionIntent.STOP
 
         # 3️⃣ TRACK BALL
         if robot_mode == RobotMode.TRACK_BALL:
-            if ball_seen:
-                return DecisionIntent.TRACK_BALL
-            return DecisionIntent.STOP
+            return (
+                DecisionIntent.TRACK_BALL
+                if ball_seen
+                else DecisionIntent.STOP
+            )
 
-        # 4️⃣ Follow owner (not used yet)
-        if robot_mode == RobotMode.FOLLOW_OWNER and owner_seen:
-            return DecisionIntent.FOLLOW_OWNER
+        # 4️⃣ FOLLOW OWNER (DETECTION ONLY)
+        if robot_mode == RobotMode.FOLLOW_OWNER:
+            return DecisionIntent.FOLLOW_OWNER if owner_seen else DecisionIntent.STOP
 
-        # 5️⃣ Auto mode
+        # 5️⃣ AUTO MODE
         if robot_mode == RobotMode.AUTO:
             return DecisionIntent.MOVE_FORWARD
 
-        # 6️⃣ Idle fallback
+        # 6️⃣ IDLE / FALLBACK
         return DecisionIntent.STOP

@@ -17,7 +17,7 @@ def create_app(camera: Camera) -> FastAPI:
         allow_headers=["*"],
     )
 
-    # 🔑 Share camera with routes
+    # 🔥 Inject camera
     set_camera(camera)
 
     app.include_router(router)
