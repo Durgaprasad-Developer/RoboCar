@@ -1,12 +1,10 @@
-// dashboard/src/App.jsx
-
 import { useEffect, useState } from "react";
 import { getStatus } from "./services/api";
 
-import StatusPanel from "./components/StatusPanel.jsx";
-import ModeControl from "./components/ModeControl.jsx";
-import ManualControl from "./components/ManualControl.jsx";
-import CameraFeed from "./components/CameraFeed.jsx";
+import StatusPanel from "./components/StatusPanel";
+import ModeControl from "./components/ModeControl";
+import ManualControl from "./components/ManualControl";
+import CameraView from "./components/CameraView";
 
 export default function App() {
   const [status, setStatus] = useState(null);
@@ -15,7 +13,7 @@ export default function App() {
     const interval = setInterval(async () => {
       const data = await getStatus();
       setStatus(data);
-    }, 800); // polling every 800 ms
+    }, 800);
 
     return () => clearInterval(interval);
   }, []);
@@ -23,14 +21,18 @@ export default function App() {
   return (
     <div className="app">
       <h1>🤖 RoboCar Dashboard</h1>
-
-      <CameraFeed/>
-
+    <div class="split">
+      <div className="camera">
+      <CameraView />
+      </div>
+    <div className="dashboard">
       <StatusPanel status={status} />
 
       <ModeControl currentMode={status?.mode} />
 
       <ManualControl enabled={status?.mode === "MANUAL"} />
+      </div>
+      </div>
     </div>
   );
 }

@@ -22,3 +22,5 @@ export async function sendManualCommand(command) {
     body: JSON.stringify({ command }),
   });
 }
+
+export const VIDEO_URL = `${BASE_URL}/video_feed`;

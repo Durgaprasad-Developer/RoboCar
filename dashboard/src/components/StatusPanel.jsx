@@ -1,10 +1,9 @@
-// dashboard/src/component/statusPanel.jsx
+// dashboard/src/components/StatusPanel.jsx
 
 export default function StatusPanel({ status }) {
   if (!status) return <div className="panel">Loading status…</div>;
 
-  // 🔑 FIX: ball data comes from `status.perception`
-  const ball = status.perception;
+  const perception = status.perception || {};
 
   return (
     <div className="panel">
@@ -16,22 +15,36 @@ export default function StatusPanel({ status }) {
       <p><b>Motion:</b> {status.motion}</p>
 
       <h3>Distances</h3>
-      <p>Front: {status.distances?.front ?? "-"}</p>
-      <p>Left: {status.distances?.left ?? "-"}</p>
-      <p>Right: {status.distances?.right ?? "-"}</p>
+      <p>Front: {status.distances?.front}</p>
+      <p>Left: {status.distances?.left}</p>
+      <p>Right: {status.distances?.right}</p>
 
-      {/* 🔥 BALL TRACKING UI */}
       {status.mode === "TRACK_BALL" && (
         <>
           <h3>Ball Tracking</h3>
-          <p>
-            Seen: {ball?.ball_seen ? "YES" : "NO"}
-          </p>
-          <p>
-            Position: {ball?.ball_position ?? "NONE"}
-          </p>
+          <p>Seen: {perception.ball_seen ? "YES" : "NO"}</p>
+          <p>Position: {perception.ball_position || "NONE"}</p>
         </>
       )}
+
+      {status.mode === "FOLLOW_OWNER" && (
+  <>
+    <h3>Face Recognition</h3>
+
+    {status.perception.owner_status === "OWNER" && (
+      <p style={{ color: "#22c55e" }}>OWNER DETECTED ✅</p>
+    )}
+
+    {status.perception.owner_status === "UNKNOWN" && (
+      <p style={{ color: "#ef4444" }}>UNKNOWN PERSON ❌</p>
+    )}
+
+    {status.perception.owner_status === "NONE" && (
+      <p>No face detected</p>
+    )}
+  </>
+)}
+
     </div>
   );
 }

@@ -5,10 +5,6 @@ body {
   color: #e5e7eb;
 }
 
-.app {
-  padding: 20px;
-}
-
 .panel {
   background: #020617;
   padding: 16px;
@@ -38,3 +34,7 @@ button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+
+
+
