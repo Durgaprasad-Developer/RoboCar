@@ -9,6 +9,7 @@ class RobotMode(Enum):
     AUTO = 2
     TRACK_BALL = 3
     FOLLOW_OWNER = 4
+    DETECT_OBJECT = 5
 
 
 _current_mode = RobotMode.AUTO

@@ -59,6 +59,10 @@ class MotionPlanner:
         # 4️⃣ FOLLOW OWNER (V1 = STOP)
         if intent == DecisionIntent.FOLLOW_OWNER:
             return MotionDirection.STOP
+        
+        if intent == DecisionIntent.STOP:
+            return MotionDirection.STOP
+
 
         # 5️⃣ AUTO MODE
         if intent == DecisionIntent.MOVE_FORWARD:

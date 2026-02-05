@@ -58,6 +58,9 @@ class DecisionEngine:
         # 5️⃣ AUTO MODE
         if robot_mode == RobotMode.AUTO:
             return DecisionIntent.MOVE_FORWARD
+        
+        if robot_mode == RobotMode.DETECT_OBJECT:
+            return DecisionIntent.STOP
 
         # 6️⃣ IDLE / FALLBACK
         return DecisionIntent.STOP

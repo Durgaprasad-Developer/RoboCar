@@ -2,8 +2,14 @@
 
 import { setMode } from "../services/api";
 
-const MODES = ["IDLE", "AUTO", "MANUAL", "TRACK_BALL", "FOLLOW_OWNER"];
-;
+const MODES = [
+  "IDLE",
+  "AUTO",
+  "MANUAL",
+  "TRACK_BALL",
+  "FOLLOW_OWNER",
+  "DETECT_OBJECT", // 🔥 REQUIRED
+];
 
 export default function ModeControl({ currentMode }) {
   return (

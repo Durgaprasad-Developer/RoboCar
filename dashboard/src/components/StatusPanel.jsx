@@ -45,6 +45,23 @@ export default function StatusPanel({ status }) {
   </>
 )}
 
+{status.mode === "DETECT_OBJECT" && (
+  <>
+    <h3>Object Detection</h3>
+
+    {status.perception.objects.length === 0 && (
+      <p>No objects detected</p>
+    )}
+
+    <ul>
+      {status.perception.objects.map((obj, i) => (
+        <li key={i}>{obj}</li>
+      ))}
+    </ul>
+  </>
+)}
+
+
     </div>
   );
 }

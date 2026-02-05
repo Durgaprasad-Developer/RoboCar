@@ -8,6 +8,7 @@ class ModeRequest(BaseModel):
         "AUTO",
         "TRACK_BALL",
         "FOLLOW_OWNER",
+        "DETECT_OBJECT",
     ]
 
 class ManualCommandRequest(BaseModel):

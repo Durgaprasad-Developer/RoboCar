@@ -1,3 +1,5 @@
+# backend/vision/object_detection/yolo8_detector.py
+
 from ultralytics import YOLO
 
 class YOLOv8Detector:
