@@ -8,23 +8,25 @@ const MODES = [
   "MANUAL",
   "TRACK_BALL",
   "FOLLOW_OWNER",
-  "DETECT_OBJECT", // 🔥 REQUIRED
+  "DETECT_OBJECT",
 ];
 
 export default function ModeControl({ currentMode }) {
   return (
-    <div className="panel">
+    <>
       <h2>Mode Control</h2>
 
-      {MODES.map((mode) => (
-        <button
-          key={mode}
-          onClick={() => setMode(mode)}
-          className={currentMode === mode ? "active" : ""}
-        >
-          {mode}
-        </button>
-      ))}
-    </div>
+      <div className="mode-buttons">
+        {MODES.map((mode) => (
+          <button
+            key={mode}
+            className={currentMode === mode ? "active" : ""}
+            onClick={() => setMode(mode)}
+          >
+            {mode}
+          </button>
+        ))}
+      </div>
+    </>
   );
 }

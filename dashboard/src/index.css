@@ -1,3 +1,10 @@
+/* ===============================
+   RESET / GLOBAL
+================================ */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: monospace;
@@ -5,29 +12,115 @@ body {
   color: #e5e7eb;
 }
 
-.panel {
-  background: #020617;
-  padding: 16px;
-  margin-bottom: 20px;
-  border-radius: 8px;
+.app {
+  max-width: 1500px;
+  margin: auto;
+  padding: 14px;
 }
 
+/* ===============================
+   PANEL BASE
+================================ */
+.panel {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+/* ===============================
+   HEADER
+================================ */
+.header {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+/* ===============================
+   MAIN SHELL (ONE COCKPIT)
+================================ */
+.main-shell {
+  padding: 14px;
+}
+
+/* ===============================
+   GRID LAYOUT
+================================ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2.4fr 1.6fr;
+  grid-template-rows: auto auto;
+  gap: 14px;
+}
+
+/* ===============================
+   CAMERA
+================================ */
+.camera-box h2 {
+  margin-bottom: 10px;
+}
+
+.camera-box img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #334155;
+  background: black;
+}
+
+/* ===============================
+   STATUS + MODE (MAIN PANEL)
+================================ */
+.status-box {
+  padding: 18px;
+}
+
+.status-box h2 {
+  font-size: 18px;
+}
+
+.status-box p,
+.status-box li {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+h2 {
+  font-size: 16px;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #1e293b;
+}
+
+h3 {
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+/* ===============================
+   BUTTON BASE
+================================ */
 button {
-  margin: 4px;
-  padding: 10px 14px;
   background: #1e293b;
-  color: white;
+  color: #e5e7eb;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
 }
 
 button:hover {
   background: #334155;
 }
 
-button.active {
-  background: #22c55e;
-  color: black;
+button:active {
+  transform: scale(0.98);
 }
 
 button:disabled {
@@ -35,6 +128,93 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Active mode button */
+button.active {
+  background: #22c55e;
+  color: black;
+}
 
+/* ===============================
+   MODE CONTROL
+================================ */
+.mode-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
 
+.mode-buttons button {
+  padding: 8px 14px;
+  font-size: 13px;
+}
 
+/* ===============================
+   MANUAL CONTROL
+================================ */
+.manual-box {
+  padding: 18px;
+}
+
+.manual-box h2 {
+  font-size: 18px;
+}
+
+.manual-buttons {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Medium–large manual buttons */
+.manual-buttons button {
+  padding: 14px;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* Active manual direction */
+.manual-active {
+  background: #22c55e !important;
+  color: black;
+}
+
+/* Hint text */
+.hint {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+/* ===============================
+   STATUS COLORS
+================================ */
+.ok {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 1000px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-box img {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 500px) {
+  .header {
+    font-size: 18px;
+  }
+
+  .manual-buttons button {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
