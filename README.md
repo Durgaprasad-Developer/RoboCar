@@ -1,11 +1,3 @@
-Got you bro 👍
-I cleaned this up **hard**: short, dev-friendly, zero fluff, **repo-relative commands only** (no home dirs, no machine names).
-This is the kind of README a developer actually reads and runs.
-
-You can paste this directly as `README.md`.
-
----
-
 # 🤖 RoboCar
 
 A **modular autonomous robot system** with vision + brain + web dashboard.
