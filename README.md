@@ -77,7 +77,7 @@ robo_car/
 ### 1️⃣ Clone
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Durgaprasad-Developer/RoboCar
 cd robo_car
 ```
 
